@@ -9,7 +9,7 @@ client.on('faker-products-update', (data) => {
         <tr>
             
             <td>{{nombre}}</td>
-            <td>{{price}}</td>
+            <td>$ {{price}}</td>
             <td><img src="{{foto}}" style="width: 30px" alt="">  </td>
         </tr>
     `);
@@ -28,6 +28,9 @@ client.on('faker-products-update', (data) => {
     
 
 });
+
+
+
 
 
 client.on('products-update', (data) => {

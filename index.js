@@ -1,8 +1,4 @@
-/*
->> Consigna 1: 
-Sobre el desafío entregable de la clase 16, crear una vista en forma de tabla que consuma desde la ruta ‘/api/productos-test’ del servidor una lista con 5 productos generados al azar utilizando Faker.js como generador de información aleatoria de test (en lugar de tomarse desde la base de datos). Elegir apropiadamente los temas para conformar el objeto ‘producto’ (nombre, precio y foto).
 
-*/
 
 const express = require('express');
 const http = require('http');
@@ -26,6 +22,18 @@ const productos = new Contenedor("productos", dbClient)
 
 const messages = new MessageContainer("messages", dbClientSQLite3)
 
+const createElement = async (n)=>{
+    const productos =[]
+    
+    for(let i=0; i<n; i++){                
+        const nombre = await faker.commerce.product()
+        const price = await faker.commerce.price()
+        const foto = await faker.image.business()
+        productos.push({nombre, price, foto})
+    }
+    return productos
+}
+
 
 io.on('connection', async (client) => {
     
@@ -36,6 +44,8 @@ io.on('connection', async (client) => {
 
         await messages.getAll()
             .then((data)=>client.emit('messages-update', messages))
+
+        await createElement(5).then((data)=>{client.emit('faker-products-update', data)})
         
       
         await client.on('producto', data => {   
@@ -77,27 +87,10 @@ io.on('connection', async (client) => {
 
     })
   
-  });
+});
 
-  app.use('/api/productos-test', (req, res) => {
-    io.on('connection', async (client)=>{
-        try{
-            const productos = []
-            for(let i=0; i<5; i++){
-                
-                const nombre = faker.commerce.product()
-                const price = faker.commerce.price()
-                const foto = faker.image.business()
-                productos.push({nombre, price, foto})
-            }
-            await io.sockets.emit('faker-products-update', productos)
-        }
-        catch(err){
-            console.log(err)
-        }
-    })
-})
   
+
 
 
 
