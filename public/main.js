@@ -1,5 +1,33 @@
 const client = io();
 
+client.on('faker-products-update', (data) => {
+    
+    console.log(data)
+    const tbody = document.getElementById('faker-tbody');
+    let tr = ""
+    const templateTr = Handlebars.compile(`
+        <tr>
+            
+            <td>{{nombre}}</td>
+            <td>{{price}}</td>
+            <td><img src="{{foto}}" style="width: 30px" alt="">  </td>
+        </tr>
+    `);
+    
+  
+    data.forEach((product)=>{
+        
+        tr = `
+        ${tr}
+        ${templateTr(product)}
+        `      
+        tbody.innerHTML = tr;   
+    })
+
+ 
+    
+
+});
 
 
 client.on('products-update', (data) => {
@@ -80,7 +108,6 @@ messageForm.addEventListener('submit', (e)=>{
     client.emit('mensaje', messageToSend)
 
 })
-
 
 
 

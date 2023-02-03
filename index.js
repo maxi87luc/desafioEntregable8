@@ -1,8 +1,16 @@
+/*
+>> Consigna 1: 
+Sobre el desafío entregable de la clase 16, crear una vista en forma de tabla que consuma desde la ruta ‘/api/productos-test’ del servidor una lista con 5 productos generados al azar utilizando Faker.js como generador de información aleatoria de test (en lugar de tomarse desde la base de datos). Elegir apropiadamente los temas para conformar el objeto ‘producto’ (nombre, precio y foto).
 
+*/
 
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const { faker } = require('@faker-js/faker');
+faker.setLocale('es')
+
+
 
 const app = express();
 const server = http.createServer(app);
@@ -58,6 +66,8 @@ io.on('connection', async (client) => {
         data.date = {DD, MM, YY, hh, mm}
      
         messages.save(data)
+        console.log(data)
+        
         messages.getAll()
             
             .then((data)=>io.sockets.emit('messages-update', data))
@@ -66,8 +76,32 @@ io.on('connection', async (client) => {
 
 
     })
+  
   });
 
+  app.use('/api/productos-test', (req, res) => {
+    io.on('connection', async (client)=>{
+        try{
+            const productos = []
+            for(let i=0; i<5; i++){
+                
+                const nombre = faker.commerce.product()
+                const price = faker.commerce.price()
+                const foto = faker.image.business()
+                productos.push({nombre, price, foto})
+            }
+            await io.sockets.emit('faker-products-update', productos)
+        }
+        catch(err){
+            console.log(err)
+        }
+    })
+})
+  
+
+
+
+  
 
 const PORT = 8080
 server.listen(PORT, ()=> console.log(`I´m listening in port ${PORT}`))
