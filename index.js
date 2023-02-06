@@ -1,26 +1,62 @@
+/*
+
+>> Aspectos a incluir en el entregable: 
+
+El mensaje se envía del frontend hacia el backend, el cual lo almacenará en la base de datos elegida. Luego cuando el cliente se conecte o envie un mensaje, recibirá un array de mensajes a representar en su vista. 
+El array que se devuelve debe estar normalizado con normalizr, conteniendo una entidad de autores. Considerar que el array tiene sus autores con su correspondiente id (mail del usuario), pero necesita incluir para el proceso de normalización un id para todo el array en su conjunto (podemos asignarle nosotros un valor fijo).
+Ejemplo: { id: ‘mensajes’, mensajes: [ ] }
+El frontend debería poseer el mismo esquema de normalización que el backend, para que este pueda desnormalizar y presentar la información adecuada en la vista.
 
 
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const { faker } = require('@faker-js/faker');
+*/
+
+import  express from 'express';
+import  http from 'http' ;
+
+import  { faker } from '@faker-js/faker';
 faker.setLocale('es')
 
 
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
-app.use(express.json())
+import { Server } from 'socket.io';
+
+import { createServer } from 'http';
+
+import Mensaje from './model/messageSchema.js'
+
+import { normalize, schema } from 'normalizr';
+
+
+const server = createServer(app); 
+const io = new Server(server);
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
-const {Contenedor, MessageContainer }= require('./model/index')
-const { dbClient, dbClientSQLite3 } = require("./config/connectToDb");
+import Contenedor from './model/index.js'
+import MessagesDaoMongoDb  from './daos/MessageDaoMongoDb.js'
+import dbClient from './config/connectToDb.js' ;
+import connectToDb  from './config/connectToMongoDb.js' ;
+
+connectToDb().then(()=>console.log("OK"))
 
 const productos = new Contenedor("productos", dbClient)
 
-const messages = new MessageContainer("messages", dbClientSQLite3)
+const messages = new MessagesDaoMongoDb({name: "mensajes", model: Mensaje})
+
+const user = new schema.Entity('users');
+
+const content = new schema.Entity('contents')
+
+const mensaje = new schema.Entity('mensajes', {
+    author: user,
+    content: content
+});
+
+
+
+  
+
 
 const createElement = async (n)=>{
     const productos =[]
@@ -43,7 +79,15 @@ io.on('connection', async (client) => {
 
 
         await messages.getAll()
-            .then((data)=>client.emit('messages-update', messages))
+            // .then((data)=> {
+            //     console.log(data)
+            //     const mensajes = {mensajes: data}
+            //     const normalizedData =  normalize(mensajes, mensaje)
+            //     console.log("Esta es la data normalizada")
+            //     console.log(JSON.stringify(normalizedData, null, 2))
+            //     return normalizedData
+            // })
+            .then((data)=>client.emit('messages-update', data))
 
         await createElement(5).then((data)=>{client.emit('faker-products-update', data)})
         
@@ -73,7 +117,9 @@ io.on('connection', async (client) => {
         const YY = date.getYear() + 1900;
         const hh = date.getHours()
         const mm = date.getMinutes()
-        data.date = {DD, MM, YY, hh, mm}
+        console.log(data)
+        data.content.date = {DD, MM, YY, hh, mm}
+        
      
         messages.save(data)
         console.log(data)

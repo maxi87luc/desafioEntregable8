@@ -1,4 +1,4 @@
-const knex = require('knex');
+import knex from 'knex';
 
 
 const dbClient = knex({
@@ -11,14 +11,6 @@ const dbClient = knex({
   }
 });
 
-const dbClientSQLite3 = knex({
-  client: 'sqlite3',
-  connection: { filename: './DB/ecommerce.sqlite' },
-  
- 
-});
 
+export default dbClient
 
-
-
-module.exports = { dbClient, dbClientSQLite3 };

@@ -14,15 +14,17 @@ client.on('faker-products-update', (data) => {
         </tr>
     `);
     
-  
-    data.forEach((product)=>{
+
+        data.forEach((product)=>{
         
-        tr = `
-        ${tr}
-        ${templateTr(product)}
-        `      
-        tbody.innerHTML = tr;   
-    })
+            tr = `
+            ${tr}
+            ${templateTr(product)}
+            `      
+            tbody.innerHTML = tr;   
+        })
+    
+    
 
  
     
@@ -68,12 +70,13 @@ client.on('messages-update', (data) => {
     const messagesContainer = document.getElementById('messages-container')
     let li = ""
     const templateLi = Handlebars.compile(`
-    <li class="list-group-item"><strong style="color: blue">{{email}}:</strong><p style="color: brown">{{date.DD}}/{{date.MM}}/{{date.YY}} {{date.hh}}:{{date.mm}}</p><p style="font-style: italic; color: green">{{message}}</p></li>
+    <li class="list-group-item"><img width="30px" src="{{author.avatar}}"><strong style="color: blue">{{author.id}}:</strong><p style="color: brown">{{content.date.DD}}/{{content.date.MM}}/{{content.date.YY}} {{content.date.hh}}:{{content.date.mm}}</p><p style="font-style: italic; color: green">{{content.text}}</p></li>
     `)  
     
-    
+ 
 
     data.forEach((message)=>{
+        console.log(message.author.id)
         li = `
             ${li}
             ${templateLi(message)}
@@ -105,8 +108,27 @@ messageForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     
     const email = messageForm[0].value;
-    const message = messageForm[1].value;
-    messageToSend = {email, message}
+    const name = messageForm[1].value;
+    const lastname = messageForm[2].value;
+    const age = messageForm[3].value;
+    const alias = messageForm[4].value;
+    const avatar = messageForm[5].value
+
+    const message = messageForm[6].value;
+    messageToSend = {
+        author: {
+            id: email, 
+            nombre: name, 
+            apellido: lastname, 
+            edad: age, 
+            alias: alias,
+            avatar: avatar
+        },
+        content: {
+            text: message
+        }
+    }
+    console.log(messageToSend)
 
     client.emit('mensaje', messageToSend)
 
