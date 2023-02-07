@@ -42,19 +42,37 @@ connectToDb().then(()=>console.log("OK"))
 
 const productos = new Contenedor("productos", dbClient)
 
+
 const messages = new MessagesDaoMongoDb({name: "mensajes", model: Mensaje})
+// Define a authors schema
+const author = new schema.Entity('authors',);
 
-const user = new schema.Entity('users');
-
-const content = new schema.Entity('contents')
-
-const mensaje = new schema.Entity('mensajes', {
-    author: user,
-    content: content
+// Define your message schema
+const message = new schema.Entity('messages', {
+  author: author,
 });
 
+const mensajeria = new schema.Entity('mensajerias', {
+  mensajes: [message]
+});
 
+const normalizar = (data)=>{
+    
+    const dataConId = data.map((message)=>{
+  
+        return {
+          id: message._id,
+          author: message.author,
+          content: message.content,
+        }
+       
+      
+      })
+    const normalizedData = normalize({id: "mensajes", mensajes: dataConId}, mensajeria);
+    console.log(normalizedData)
+    return normalizedData
 
+}
   
 
 
@@ -79,14 +97,10 @@ io.on('connection', async (client) => {
 
 
         await messages.getAll()
-            // .then((data)=> {
-            //     console.log(data)
-            //     const mensajes = {mensajes: data}
-            //     const normalizedData =  normalize(mensajes, mensaje)
-            //     console.log("Esta es la data normalizada")
-            //     console.log(JSON.stringify(normalizedData, null, 2))
-            //     return normalizedData
-            // })
+
+            .then((data)=> {
+                return normalizar(data)
+            })
             .then((data)=>client.emit('messages-update', data))
 
         await createElement(5).then((data)=>{client.emit('faker-products-update', data)})
@@ -125,8 +139,10 @@ io.on('connection', async (client) => {
         console.log(data)
         
         messages.getAll()
-            
-            .then((data)=>io.sockets.emit('messages-update', data))
+            .then((data)=> {
+                return normalizar(data)
+            })
+            .then((data)=>client.emit('messages-update', data))
 
         
 

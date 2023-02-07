@@ -1,3 +1,16 @@
+import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
+
+const author = new schema.Entity('authors',);
+
+// Define your message schema
+const message = new schema.Entity('messages', {
+  author: author,
+});
+
+const mensajeria = new schema.Entity('mensajerias', {
+  mensajes: [message]
+});
+
 const client = io();
 
 client.on('faker-products-update', (data) => {
@@ -36,7 +49,7 @@ client.on('faker-products-update', (data) => {
 
 
 client.on('products-update', (data) => {
-    console.log(data)
+    
     const tbody = document.getElementById('tbody');
     let tr = ""
     const templateTr = Handlebars.compile(`
@@ -65,7 +78,8 @@ client.on('products-update', (data) => {
 
 client.on('messages-update', (data) => {	
 
-    console.log(data)
+    
+    const denormalizedData = denormalize(data.result, mensajeria, data.entities);
     
     const messagesContainer = document.getElementById('messages-container')
     let li = ""
@@ -75,8 +89,8 @@ client.on('messages-update', (data) => {
     
  
 
-    data.forEach((message)=>{
-        console.log(message.author.id)
+    denormalizedData.mensajes.forEach((message)=>{
+        
         li = `
             ${li}
             ${templateLi(message)}
@@ -115,7 +129,7 @@ messageForm.addEventListener('submit', (e)=>{
     const avatar = messageForm[5].value
 
     const message = messageForm[6].value;
-    messageToSend = {
+    const messageToSend = {
         author: {
             id: email, 
             nombre: name, 
