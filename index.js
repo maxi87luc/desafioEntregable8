@@ -93,8 +93,9 @@ io.on('connection', async (client) => {
     
     try{
         await productos.getAll()
+            .then(io.sockets.emit('loginUpdate', {name: "Maxi"} ))
             .then((data)=>client.emit('products-update', data))
-
+            
 
         await messages.getAll()
 
@@ -104,6 +105,8 @@ io.on('connection', async (client) => {
             .then((data)=>client.emit('messages-update', data))
 
         await createElement(5).then((data)=>{client.emit('faker-products-update', data)})
+
+        await 
         
       
         await client.on('producto', data => {   
@@ -123,6 +126,7 @@ io.on('connection', async (client) => {
         console.log(err)
     }
   
+    client.on
   
     client.on('mensaje', data =>{
         const date = new Date()
@@ -147,6 +151,10 @@ io.on('connection', async (client) => {
         
 
 
+    })
+
+    client.on('login', data =>{
+        console.log(data)
     })
   
 });

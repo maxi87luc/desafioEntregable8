@@ -15,7 +15,7 @@ const client = io();
 
 client.on('faker-products-update', (data) => {
     
-    console.log(data)
+    
     const tbody = document.getElementById('faker-tbody');
     let tr = ""
     const templateTr = Handlebars.compile(`
@@ -78,7 +78,7 @@ client.on('products-update', (data) => {
 
 client.on('messages-update', (data) => {	
 
-    
+   
     const denormalizedData = denormalize(data.result, mensajeria, data.entities);
     
     const messagesContainer = document.getElementById('messages-container')
@@ -99,8 +99,51 @@ client.on('messages-update', (data) => {
     })
 })
 
+client.on('loginUpdate', (data)=>{
+    
+    const loginContainer = document.getElementById('login')
+    if(data){
+        const div = "";
+        const templateDiv = Handlebars.compile(`
+            <div class="row">
+                <div class="col">
+                    <h3>Bienvenido {{name}}</h3>
+                </div>
+                <div class="col">
+                    <button id="logOut">Desloguear</button>
+                </div>
+            </div>
+              
+        `)
+        loginContainer.innerHTML = templateDiv(data)
+    } else {
+        const div = "";
+        const templateDiv = Handlebars.compile(`
+            <div class="row">
+                <div class="col">
+                    <h3>Iniciar sesión</h3>
+                </div>
+                <div class="col">
+                    <button id="logIn">Log In</button>
+                </div>
+            </div>
+              
+        `)
+        loginContainer.innerHTML = templateDiv()
+
+    }
+})
+
+const loginForm = document.getElementById('loginForm')
+
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = loginForm[0].value;
+    client.emit('login', name)
+})
 
 const productForm = document.getElementById('productForm');
+
 
 
 productForm.addEventListener('submit', (e)=>{
@@ -109,7 +152,7 @@ productForm.addEventListener('submit', (e)=>{
     const title = productForm[0].value;
     const price = parseInt(productForm[1].value);
     const thumbnail = productForm[2].value;
-    messageToSend = {title, price, thumbnail};
+    const messageToSend = {title, price, thumbnail};
         
     client.emit('producto', messageToSend);
          
