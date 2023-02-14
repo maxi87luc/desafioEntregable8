@@ -1,15 +1,16 @@
-import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
+// import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
 
-const author = new schema.Entity('authors',);
 
-// Define your message schema
-const message = new schema.Entity('messages', {
-  author: author,
-});
+// const author = new schema.Entity('authors',);
 
-const mensajeria = new schema.Entity('mensajerias', {
-  mensajes: [message]
-});
+// // Define your message schema
+// const message = new schema.Entity('messages', {
+//   author: author,
+// });
+
+// const mensajeria = new schema.Entity('mensajerias', {
+//   mensajes: [message]
+// });
 
 const client = io();
 
@@ -100,9 +101,9 @@ client.on('messages-update', (data) => {
 })
 
 client.on('loginUpdate', (data)=>{
-    
+    console.log(data)
     const loginContainer = document.getElementById('login')
-    if(data){
+    if(data.name){
         const div = "";
         const templateDiv = Handlebars.compile(`
             <div class="row">
@@ -110,7 +111,10 @@ client.on('loginUpdate', (data)=>{
                     <h3>Bienvenido {{name}}</h3>
                 </div>
                 <div class="col">
-                    <button id="logOut">Desloguear</button>
+                    <a href="/logout" >
+                        <button id="logOut">Desloguear</button>
+                    </a>
+                    
                 </div>
             </div>
               
@@ -124,7 +128,9 @@ client.on('loginUpdate', (data)=>{
                     <h3>Iniciar sesión</h3>
                 </div>
                 <div class="col">
-                    <button id="logIn">Log In</button>
+                    <a href="/login" >
+                        <button id="login">Log In</button>
+                    </a>
                 </div>
             </div>
               
@@ -134,13 +140,6 @@ client.on('loginUpdate', (data)=>{
     }
 })
 
-const loginForm = document.getElementById('loginForm')
-
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = loginForm[0].value;
-    client.emit('login', name)
-})
 
 const productForm = document.getElementById('productForm');
 

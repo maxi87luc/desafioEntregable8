@@ -1,20 +1,15 @@
-/*
 
->> Aspectos a incluir en el entregable: 
-
-El mensaje se envía del frontend hacia el backend, el cual lo almacenará en la base de datos elegida. Luego cuando el cliente se conecte o envie un mensaje, recibirá un array de mensajes a representar en su vista. 
-El array que se devuelve debe estar normalizado con normalizr, conteniendo una entidad de autores. Considerar que el array tiene sus autores con su correspondiente id (mail del usuario), pero necesita incluir para el proceso de normalización un id para todo el array en su conjunto (podemos asignarle nosotros un valor fijo).
-Ejemplo: { id: ‘mensajes’, mensajes: [ ] }
-El frontend debería poseer el mismo esquema de normalización que el backend, para que este pueda desnormalizar y presentar la información adecuada en la vista.
-
-
-*/
 
 import  express from 'express';
-import  http from 'http' ;
+
 
 import  { faker } from '@faker-js/faker';
 faker.setLocale('es')
+import expressSession from 'express-session'
+import MongoStore from 'connect-mongo'
+
+
+
 
 
 
@@ -39,6 +34,34 @@ import dbClient from './config/connectToDb.js' ;
 import connectToDb  from './config/connectToMongoDb.js' ;
 
 connectToDb().then(()=>console.log("OK"))
+let name = ""
+app.use(expressSession({
+    store: MongoStore.create({ mongoUrl: 'mongodb+srv://entregableUser:1234@coderhouse.yv2sexp.mongodb.net/?retryWrites=true&w=majority' }),
+    secret: 'my-super-secret',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 60000
+    }
+
+  }));
+
+
+
+app.post('/login', (req, res, next)=>{
+    
+    req.session.name = req.body.name
+    
+    res.redirect('../')
+    next()
+    
+})
+app.use((req, res, next)=>{
+    
+    name = req.session.name
+    next()
+})
+
 
 const productos = new Contenedor("productos", dbClient)
 
@@ -88,13 +111,21 @@ const createElement = async (n)=>{
     return productos
 }
 
+app.get('/logout', (req, res)=>{
+    req.session.destroy();
+    
+    res.redirect('../login');
+})
+
+
 
 io.on('connection', async (client) => {
-    
+     
     try{
         await productos.getAll()
-            .then(io.sockets.emit('loginUpdate', {name: "Maxi"} ))
             .then((data)=>client.emit('products-update', data))
+            .then(io.sockets.emit('loginUpdate', {name: name}))
+            
             
 
         await messages.getAll()
@@ -125,6 +156,7 @@ io.on('connection', async (client) => {
     } catch (err){
         console.log(err)
     }
+    
   
     client.on
   
@@ -153,9 +185,12 @@ io.on('connection', async (client) => {
 
     })
 
-    client.on('login', data =>{
-        console.log(data)
+    client.on('login', data=>{
+        const name = data
+        console.log(name)
     })
+    
+    
   
 });
 
