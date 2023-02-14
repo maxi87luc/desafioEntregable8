@@ -1,16 +1,16 @@
-// import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
+import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
 
 
-// const author = new schema.Entity('authors',);
+const author = new schema.Entity('authors',);
 
-// // Define your message schema
-// const message = new schema.Entity('messages', {
-//   author: author,
-// });
+// Define your message schema
+const message = new schema.Entity('messages', {
+  author: author,
+});
 
-// const mensajeria = new schema.Entity('mensajerias', {
-//   mensajes: [message]
-// });
+const mensajeria = new schema.Entity('mensajerias', {
+  mensajes: [message]
+});
 
 const client = io();
 
