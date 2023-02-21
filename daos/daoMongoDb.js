@@ -7,7 +7,7 @@ import ContainerMongoDb from '../model/ContainerMongoDb.js' ;
 
 
 
-class MessagesDaoMongoDb extends ContainerMongoDb {
+class daoMongoDb extends ContainerMongoDb {
 
     constructor(name, model) {
         super(name, model)
@@ -16,4 +16,4 @@ class MessagesDaoMongoDb extends ContainerMongoDb {
     
 }
 
-export default MessagesDaoMongoDb;
+export default daoMongoDb;

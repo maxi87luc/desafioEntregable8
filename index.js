@@ -1,6 +1,68 @@
+/*
+ 
+Implementar sobre el entregable que venimos realizando un mecanismo de autenticación. Para ello:
+Se incluirá una vista de registro, en donde se pidan email y contraseña. Estos datos se persistirán usando MongoDb, en una (nueva) colección de usuarios, cuidando que la contraseña quede encriptada (sugerencia: usar la librería bcrypt).
+Una vista de login, donde se pida email y contraseña, y que realice la autenticación del lado del servidor a través de una estrategia de passport local.
+Cada una de las vistas (logueo - registro) deberá tener un botón para ser redirigido a la otra.
 
+*/
 
 import  express from 'express';
+import session from 'express-session'
+import passport from 'passport'
+import pkg from 'passport-strategy';
+import { Strategy } from 'passport-local'
+import {hash, hashSync, compareSync} from 'bcrypt'
+
+//passport login -----------------------------------------------------------
+
+
+passport.use('login', new Strategy((username, password, done) => {
+    const user = users.findOne({username: username})
+        .then((user)=>{
+            console.log(user)
+            if(!user){
+                done(null, false)
+                return
+            } 
+            if(compareSync(password, user.password)){
+                done(null, user);
+                return;
+            }
+            done(null, false);
+        })
+
+    
+}))
+
+//passport signup -------------------------------------------------
+passport.use('signup', new Strategy((username, password, done) => {
+    const existentUser = users.findOne({username: username})
+        .then(user=>{
+            if (user) {
+                done(new Error('User already exists'));
+                return;
+                }
+        });
+   
+
+
+    const user = { username, password: hashSync(password, 10) };
+    console.log({ user });
+    users.save(user);
+
+    done(null, user);
+}))
+
+passport.serializeUser(function(user, done) {
+    done(null, user.username);
+  });
+  
+  passport.deserializeUser(function(username, done) {
+    const user = users.findOne({username: username});
+    done(null, user);
+  });
+  
 
 
 import  { faker } from '@faker-js/faker';
@@ -13,14 +75,17 @@ import MongoStore from 'connect-mongo'
 
 
 
+
 const app = express();
 import { Server } from 'socket.io';
 
 import { createServer } from 'http';
 
 import Mensaje from './model/messageSchema.js'
+import User from './model/userSchema.js'
 
 import { normalize, schema } from 'normalizr';
+
 
 
 const server = createServer(app); 
@@ -29,12 +94,10 @@ const io = new Server(server);
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 import Contenedor from './model/index.js'
-import MessagesDaoMongoDb  from './daos/MessageDaoMongoDb.js'
+import daoMongoDb  from './daos/daoMongoDb.js'
 import dbClient from './config/connectToDb.js' ;
-import connectToDb  from './config/connectToMongoDb.js' ;
+import connectToMongoDb  from './config/connectToMongoDb.js' ;
 
-connectToDb().then(()=>console.log("OK"))
-let name = ""
 app.use(expressSession({
     store: MongoStore.create({ mongoUrl: 'mongodb+srv://entregableUser:1234@coderhouse.yv2sexp.mongodb.net/?retryWrites=true&w=majority' }),
     secret: 'my-super-secret',
@@ -46,27 +109,58 @@ app.use(expressSession({
 
   }));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 
-app.post('/login', (req, res, next)=>{
-    
-    req.session.name = req.body.name
-    
-    res.redirect('../')
-    next()
-    
-})
-app.use((req, res, next)=>{
-    
-    name = req.session.name
-    next()
-})
+
 
 
 const productos = new Contenedor("productos", dbClient)
 
 
-const messages = new MessagesDaoMongoDb({name: "mensajes", model: Mensaje})
+const messages = new daoMongoDb({name: "mensajes", model: Mensaje})
+
+const users = new daoMongoDb({name: "users", model: User})
+
+
+
+connectToMongoDb().then(()=>console.log("database OK"))
+
+
+
+
+
+
+
+
+app.post('/login',
+    passport.authenticate('login', { failureRedirect: '../login-error' })
+    ,(req, res, next)=>{
+ 
+    req.session.username = req.user.username;
+
+    
+    res.redirect('../')
+    next()
+    
+})
+
+app.post('/signin',
+    passport.authenticate('signup', { failureRedirect: '../signin-error' })
+    ,(req, res, next)=>{ 
+        
+        req.session.username = req.user.username
+    
+        res.redirect('../')
+        next()
+    
+})
+
+
+
+// Normalizr ------------------------------------
+
 // Define a authors schema
 const author = new schema.Entity('authors',);
 
@@ -112,11 +206,30 @@ const createElement = async (n)=>{
 }
 
 app.get('/logout', (req, res)=>{
+    
     req.session.destroy();
     
+    name = ""
     res.redirect('../login');
 })
 
+let name = ""
+const refreshName = ()=>{
+   
+    app.use((req, res)=>{
+       
+        if(req.session.username)
+            name = req.session.username
+        else{
+            name = "";
+        }
+    })
+   
+    
+    return name
+
+}
+console.log(refreshName())
 
 
 io.on('connection', async (client) => {
@@ -124,7 +237,8 @@ io.on('connection', async (client) => {
     try{
         await productos.getAll()
             .then((data)=>client.emit('products-update', data))
-            .then(io.sockets.emit('loginUpdate', {name: name}))
+            .then(()=>refreshName())
+            .then(io.sockets.emit('loginUpdate', {name: refreshName()}))
             
             
 
@@ -185,10 +299,7 @@ io.on('connection', async (client) => {
 
     })
 
-    client.on('login', data=>{
-        const name = data
-        console.log(name)
-    })
+    
     
     
   

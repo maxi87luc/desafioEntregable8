@@ -36,7 +36,16 @@ class ContainerMongoDb {
        
 
         
-    
+    async findOne(keyValue){
+        try {
+            const item = this.model.findOne(keyValue)
+            return item
+        }
+        catch (err){
+            console.log(err)
+        }
+
+    }
   
             
         
