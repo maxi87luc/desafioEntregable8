@@ -100,10 +100,11 @@ import daoMongoDb  from './daos/daoMongoDb.js'
 import dbClient from './config/connectToDb.js' ;
 import connectToMongoDb  from './config/connectToMongoDb.js' ;
 import {port} from './config/enviroment.js'
-import {mongoURL} from './config/enviroment.js'
+import {mongoURL, mongoSecret} from './config/enviroment.js'
+
 app.use(expressSession({
     store: MongoStore.create({ mongoUrl: mongoURL }),
-    secret: 'my-super-secret',
+    secret: mongoSecret,
     resave: true,
     saveUninitialized: true,
     cookie: {
