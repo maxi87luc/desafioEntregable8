@@ -14,6 +14,8 @@ import pkg from 'passport-strategy';
 import { Strategy } from 'passport-local'
 import {hash, hashSync, compareSync} from 'bcrypt'
 
+
+
 //passport login -----------------------------------------------------------
 
 
@@ -97,9 +99,10 @@ import Contenedor from './model/index.js'
 import daoMongoDb  from './daos/daoMongoDb.js'
 import dbClient from './config/connectToDb.js' ;
 import connectToMongoDb  from './config/connectToMongoDb.js' ;
-
+import {port} from './config/enviroment.js'
+import {mongoURL} from './config/enviroment.js'
 app.use(expressSession({
-    store: MongoStore.create({ mongoUrl: 'mongodb+srv://entregableUser:1234@coderhouse.yv2sexp.mongodb.net/?retryWrites=true&w=majority' }),
+    store: MongoStore.create({ mongoUrl: mongoURL }),
     secret: 'my-super-secret',
     resave: true,
     saveUninitialized: true,
@@ -312,7 +315,7 @@ io.on('connection', async (client) => {
 
   
 
-const PORT = 8080
-server.listen(PORT, ()=> console.log(`I´m listening in port ${PORT}`))
+
+server.listen(port, ()=> console.log(`I´m listening in port ${port}`))
 
 
