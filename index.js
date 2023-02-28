@@ -13,7 +13,9 @@ import passport from 'passport'
 import pkg from 'passport-strategy';
 import { Strategy } from 'passport-local'
 import {hash, hashSync, compareSync} from 'bcrypt'
-
+import { fork } from "child_process"
+const randoms = fork('./helpers/randoms.js');
+console.log(randoms)
 
 
 //passport login -----------------------------------------------------------
@@ -87,11 +89,32 @@ import Mensaje from './model/messageSchema.js'
 import User from './model/userSchema.js'
 
 import { normalize, schema } from 'normalizr';
+import {mongoURL, mongoSecret, info} from './config/enviroment.js';
 
 
 
 const server = createServer(app); 
 const io = new Server(server);
+
+app.get('/info', (req, res)=>{
+
+    
+    res.send(JSON.stringify(info, null, 2))
+    
+})
+
+app.get('/api/randoms', (req, res)=>{
+    
+    const data = parseInt(req.query.cant)??100000000
+    console.log(data)
+    randoms.send(data)
+    randoms.on('message', (object) => {
+        
+        console.log(object)
+    });   
+    res.end("random")
+    
+})
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
@@ -100,7 +123,7 @@ import daoMongoDb  from './daos/daoMongoDb.js'
 import dbClient from './config/connectToDb.js' ;
 import connectToMongoDb  from './config/connectToMongoDb.js' ;
 import {port} from './config/enviroment.js'
-import {mongoURL, mongoSecret} from './config/enviroment.js'
+
 
 app.use(expressSession({
     store: MongoStore.create({ mongoUrl: mongoURL }),
@@ -236,6 +259,8 @@ const refreshName = ()=>{
 console.log(refreshName())
 
 
+
+
 io.on('connection', async (client) => {
      
     try{
@@ -313,7 +338,7 @@ io.on('connection', async (client) => {
 
 
 
-
+console.log(process.on)
   
 
 

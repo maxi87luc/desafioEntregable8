@@ -1,6 +1,7 @@
 import {schema, denormalize} from 'https://cdn.jsdelivr.net/npm/normalizr@3.6.2/+esm'
 
 
+
 const author = new schema.Entity('authors',);
 
 // Define your message schema
@@ -101,7 +102,7 @@ client.on('messages-update', (data) => {
 })
 
 client.on('loginUpdate', (data)=>{
-    console.log(data)
+   
     const loginContainer = document.getElementById('login')
     if(data.name){
         const div = "";
