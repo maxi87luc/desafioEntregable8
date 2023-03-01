@@ -1,11 +1,4 @@
-/*
- 
-Implementar sobre el entregable que venimos realizando un mecanismo de autenticación. Para ello:
-Se incluirá una vista de registro, en donde se pidan email y contraseña. Estos datos se persistirán usando MongoDb, en una (nueva) colección de usuarios, cuidando que la contraseña quede encriptada (sugerencia: usar la librería bcrypt).
-Una vista de login, donde se pida email y contraseña, y que realice la autenticación del lado del servidor a través de una estrategia de passport local.
-Cada una de las vistas (logueo - registro) deberá tener un botón para ser redirigido a la otra.
 
-*/
 
 import  express from 'express';
 import session from 'express-session'
