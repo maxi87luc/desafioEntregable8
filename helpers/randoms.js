@@ -1,5 +1,5 @@
 process.on('message', data => {
-    console.log(data)
+    
     let object = {}
     const randomNumber = (max)=>{
         return Math.floor(Math.random() * max)
@@ -12,10 +12,10 @@ process.on('message', data => {
         
         if(object.hasOwnProperty(random)){
             object[random]++
-            console.log("+1")
+            
         } else{
             object[random]=1            
-            console.log("+1")
+            
         }
     }
     
