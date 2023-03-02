@@ -105,6 +105,7 @@ client.on('loginUpdate', (data)=>{
    
     const loginContainer = document.getElementById('login')
     if(data.name){
+        
         const div = "";
         const templateDiv = Handlebars.compile(`
             <div class="row">
