@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import Mensaje from './model/messageSchema.js'
 import { normalize, schema } from 'normalizr';
-import {mongoURL, mongoSecret, info} from './config/enviroment.js';
+import {mongoURL, mongoSecret, info, modo} from './config/enviroment.js';
 import infoRoute from './routes/info.js'
 import apiRandoms from './routes/api/randoms.js'
 import Contenedor from './model/index.js'
@@ -20,6 +20,8 @@ import {login, loginPassport} from './routes/login.js'
 import {signin, signinPassport} from './routes/signin.js'
 import normalizar from './helpers/normalizr.js'
 import createElement from './helpers/createElement.js'
+import cluster from 'cluster'
+
 
 const app = express();
 faker.setLocale('es')
@@ -96,19 +98,20 @@ const refreshName = ()=>{
 io.on('connection', async (client) => {
      
     try{
-        await productos.getAll()
-            .then((data)=>client.emit('products-update', data))
-            .then(()=>refreshName())
-            .then(io.sockets.emit('loginUpdate', {name: refreshName()}))
-            
-            
-            
-
+        
         await messages.getAll()
             .then((data)=> {
                 return normalizar(data)
             })
             .then((data)=>client.emit('messages-update', data))
+
+        await productos.getAll()
+            .then((data)=>client.emit('products-update', data))
+            .then(()=>refreshName())
+            .then(io.sockets.emit('loginUpdate', {name: refreshName()}))         
+            
+            
+
            
 
         await createElement(5).then((data)=>{client.emit('faker-products-update', data)})
