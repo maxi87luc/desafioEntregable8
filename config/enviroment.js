@@ -4,7 +4,7 @@ import yargs from 'yargs'
 import os from 'os'
 
 
-const args = yargs(process.argv.slice(2))
+export const args = yargs(process.argv.slice(2))
     .default ({
         port: 8080
     })

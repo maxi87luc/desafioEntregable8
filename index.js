@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import Mensaje from './model/messageSchema.js'
 import { normalize, schema } from 'normalizr';
-import {mongoURL, mongoSecret, info, modo} from './config/enviroment.js';
+import { mongoURL, mongoSecret, info, modo, args} from './config/enviroment.js';
 import infoRoute from './routes/info.js'
 import apiRandoms from './routes/api/randoms.js'
 import Contenedor from './model/index.js'
@@ -21,6 +21,9 @@ import {signin, signinPassport} from './routes/signin.js'
 import normalizar from './helpers/normalizr.js'
 import createElement from './helpers/createElement.js'
 import cluster from 'cluster'
+import {fork} from 'child_process'
+
+
 
 
 const app = express();
@@ -121,7 +124,7 @@ io.on('connection', async (client) => {
             
             
             productos.save(data)
-                .then(()=>console.log(data))
+                
                 .then(()=>productos.getAll())
                 .then((data)=>io.sockets.emit('products-update', data))
             
@@ -168,8 +171,33 @@ io.on('connection', async (client) => {
   
 });
 
+
+if (args.modo == "cluster"){
+    if (cluster.isPrimary){
+        console.log(process.pid)
+        
+        for (let i = 0; i < info.numCpus; i++) {
+            
+          cluster.fork();
+        }
+        cluster.on('exit', (worker, code, signal)=>{
+            
+            console.log(worker.process.pid + "It´s Dead")
+            cluster.fork()
+        })
+        console.log("cluster is primary")
+    } else {
+    
+        server.listen(port, ()=> console.log(`I´m listening in port ${port}. Process ${process.pid}`))
+    
+    }
+} else {
+    server.listen(port, ()=> console.log(`I´m listening in port ${port}. Process ${process.pid}`))
+}
+
+
+
   
 
-server.listen(port, ()=> console.log(`I´m listening in port ${port}`))
 
 
