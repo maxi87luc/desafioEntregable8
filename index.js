@@ -22,6 +22,9 @@ import normalizar from './helpers/normalizr.js'
 import createElement from './helpers/createElement.js'
 import cluster from 'cluster'
 import {fork} from 'child_process'
+import compression from 'compression'
+import log4js from 'log4js';
+import './helpers/log4js.js'
 
 
 
@@ -32,7 +35,17 @@ faker.setLocale('es')
 const server = createServer(app); 
 const io = new Server(server);
 
-app.get('/info', infoRoute)
+app.use('*', (req, res, next)=>{
+    const { url, method } = req
+    const logger = log4js.getLogger();
+    logger.level = "info";
+    logger.info(`path: ${url}, method: ${method}`);
+    next()
+})
+
+
+
+app.get('/info', compression(), infoRoute)
 
 app.get('/api/randoms', apiRandoms)
 
@@ -76,6 +89,7 @@ app.get('/logout', (req, res)=>{
     name = ""
     res.redirect('../login');
 })
+
 
 
 const refreshName = ()=>{
@@ -134,6 +148,9 @@ io.on('connection', async (client) => {
                
         });
     } catch (err){
+        const logger = log4js.getLogger("err");
+        logger.level = "error";
+        logger.error(err);  
         console.log(err)
     }
     
@@ -196,7 +213,19 @@ if (args.modo == "cluster"){
 }
 
 
-
+app.get('*', (req, res) => {
+    if(req.url==="/"){
+        res.end()
+    } else {
+        console.log(req.url)
+        const { url, method } = req
+        const logger = log4js.getLogger("warn");
+        logger.level = "warn";
+        logger.warn(`Ruta ${method} ${url} no implementada`)
+    }
+    
+    
+  })
   
 
 
