@@ -1,0 +1,54 @@
+[2023-03-16T13:17:03.211] [ERROR] err - Error: connect ECONNREFUSED 127.0.0.1:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1247:16)
+    --------------------
+    at Protocol._enqueue (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Protocol.handshake (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+    at Connection.connect (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\Connection.js:116:18)
+    at C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:66:18
+    at new Promise (<anonymous>)
+    at Client_MySQL.acquireRawConnection (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:61:12)
+    at create (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\client.js:254:39)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 3306,
+  fatal: true
+}
+[2023-03-16T13:17:51.474] [ERROR] err - Error: connect ECONNREFUSED 127.0.0.1:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1247:16)
+    --------------------
+    at Protocol._enqueue (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Protocol.handshake (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+    at Connection.connect (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\Connection.js:116:18)
+    at C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:66:18
+    at new Promise (<anonymous>)
+    at Client_MySQL.acquireRawConnection (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:61:12)
+    at create (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\client.js:254:39)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 3306,
+  fatal: true
+}
+[2023-03-16T13:18:05.521] [ERROR] err - Error: connect ECONNREFUSED 127.0.0.1:3306
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1247:16)
+    --------------------
+    at Protocol._enqueue (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Protocol.handshake (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+    at Connection.connect (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\mysql\lib\Connection.js:116:18)
+    at C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:66:18
+    at new Promise (<anonymous>)
+    at Client_MySQL.acquireRawConnection (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\dialects\mysql\index.js:61:12)
+    at create (C:\Users\ADMIN2\Desktop\desafioEntregable\desafioenregable\desafioEntregable8\node_modules\knex\lib\client.js:254:39)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 3306,
+  fatal: true
+}
